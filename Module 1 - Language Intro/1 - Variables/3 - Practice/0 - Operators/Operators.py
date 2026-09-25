@@ -6,18 +6,19 @@
 # print(first_number)
 
 # multiply two factors of 64
-first_number = None
+first_number = 8 * 8
 
 # divide first_number by 10
-second_number = None
+second_number = 8 / 10
 
 # add second_number to first_number, then subtract 2
-third_number = None
+third_number = 8 + 8 - 2
 
 # now, using parentheses, divide second_number by 2, then multiply it by 20, and finally add 2.4
-fourth_number = None
+fourth_number = (( 8 /10 ) * 20 ) + 2.4
 
 # think of two different ways to raise 8 to the 2nd power
 # hint, for one of them you have to import a module discussed in class
-squared_number_one = None
-squared_number_two = None
+import math
+squared_number_one = math.pow (8,2)
+squared_number_two = 8 ** 2
