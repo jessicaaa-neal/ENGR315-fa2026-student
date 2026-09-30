@@ -23,7 +23,6 @@ def main(full_path_to_file):
 
     # load the data from the file
     data = np.loadtxt(full_path_to_file, delimiter=",")
-
     # select the 9th column as the force plate data
     force_plate = data[:, 8]
 
