@@ -71,7 +71,10 @@ def calculate_stress(force, sample_diameter):
 
     # copy your calculate_stress() from Tensile Testing here
 
-    return None
+    area = math.pi * (sample_diameter / 2) ** 2
+    stress = np.asarray(force) * 1000 / area
+
+    return stress
 
 
 def calculate_max_strength_strain(strain, stress):
@@ -86,8 +89,10 @@ def calculate_max_strength_strain(strain, stress):
 
     # copy your calculate_max_strength_strain() from Tensile Testing here
 
-    return -1, -1
+    ultimate_tensile_stress = np.max(stress)
+    fracture_strain = np.max(strain)
 
+    return ultimate_tensile_stress, fracture_strain
 
 def calculate_elastic_modulus(strain, stress):
     """
@@ -103,7 +108,14 @@ def calculate_elastic_modulus(strain, stress):
 
     # copy your calculate_elastic_modulus() from Tensile Testing here
 
-    return None, None, None
+    target_stress = 0.40 * np.max(stress)
+
+    linear_index = np.argmin(np.abs(stress - target_stress))
+
+    slope, intercept = np.polyfit(strain[:linear_index],
+                                stress[:linear_index], 1)
+
+    return linear_index, slope, intercept
 
 
 def calculate_percent_offset(slope, strain, stress):
@@ -119,7 +131,15 @@ def calculate_percent_offset(slope, strain, stress):
 
     # copy your calculate_percent_offset() from Tensile Testing here
 
-    return None, -1
+    offset = 0.002
+
+    offset_line = slope * (strain - offset)
+
+    distance = np.abs(stress - offset_line)
+
+    intercept_index = np.argmin(distance)
+
+    return offset_line, intercept_index
 
 
 def calculate_yield_strength(strain, stress, modulus):

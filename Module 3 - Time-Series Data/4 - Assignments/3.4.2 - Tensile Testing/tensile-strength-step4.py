@@ -62,7 +62,13 @@ def calculate_stress(force, sample_diameter):
 
     ### YOUR SOLUTION FROM STEP 1 TEMPLATE HERE ###
 
-    return None
+    # calculate cross-sectional area (mm^2)
+    area = math.pi * (sample_diameter / 2) ** 2
+
+    # calculate stress in MPa
+    stress = np.asarray(force) * 1000 / area
+
+    return stress
 
 
 def calculate_max_strength_strain(strain, stress):
@@ -77,7 +83,14 @@ def calculate_max_strength_strain(strain, stress):
 
     ### YOUR SOLUTION FROM STEP 2 TEMPLATE HERE ###
 
-    return -1, -1
+   # calculate maximum stress
+    ultimate_tensile_stress = np.max(stress)
+
+    # calculate maximum strain
+    fracture_strain = np.max(strain)
+
+    return ultimate_tensile_stress, fracture_strain
+
 
 def calculate_elastic_modulus(strain, stress):
     """
@@ -98,6 +111,17 @@ def calculate_elastic_modulus(strain, stress):
 
     ### YOUR SOLUTION FROM STEP 3 TEMPLATE HERE ###
 
+    # find 40% of maximum stress
+    target_stress = 0.40 * np.max(stress)
+
+    # find the index closest to 40% of maximum stress
+    linear_index = np.argmin(np.abs(stress - target_stress))
+
+    # calculate the slope and intercept of the linear region
+   # calculate the slope and intercept of the linear region
+    slope, intercept = np.polyfit(strain[:linear_index],
+                              stress[:linear_index], 1)
+
     return linear_index, slope, intercept
 
 def calculate_percent_offset(slope, strain, stress):
@@ -114,17 +138,17 @@ def calculate_percent_offset(slope, strain, stress):
     # set the desired offset for the line
     offset = 0.002
 
-    # calculate the offset line: y=m(x-0.002) + 0
-    offset_line = None
+    # calculate the offset line
+    offset_line = slope * (strain - offset)
 
-    # measure distance from all points on graph to this line. Consider using the
-    # abs() method to ensure values are positive
-    distance = None
+    # measure distance between stress curve and offset line
+    distance = np.abs(stress - offset_line)
 
-    # use argmin to find the index where the distance is minimal
-    intercept_index = -1
+    # find where distance is smallest
+    intercept_index = np.argmin(distance)
 
     return offset_line, intercept_index
+
 
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
@@ -138,7 +162,7 @@ if __name__ == "__main__":
 
     ### Do not modify below this line ###
 
-    path_to_directory = "../../../data/tensile/"
+    path_to_directory = "data/tensile/"
     path_to_samples = path_to_directory + material_folder + "/"
 
     # manually parse file to get gage diameter and then calculate cross-sectional area
