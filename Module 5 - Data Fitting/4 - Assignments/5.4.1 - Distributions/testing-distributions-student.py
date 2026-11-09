@@ -33,7 +33,9 @@ def fit_normal(_samples):
     fitted_mean = None
     fitted_std = None
 
-    # YOUR CODE HERE #
+    # YOUR CODE HErE #
+    
+    fitted_mean, fitted_std = norm.fit(_samples)
 
     return fitted_mean, fitted_std
 
@@ -49,6 +51,7 @@ def fit_exponential(_samples):
     fit_beta = None
 
     # YOUR CODE HERE #
+    _, fit_beta = expon.fit(_samples, floc=0)
 
     return fit_beta
 
@@ -66,6 +69,8 @@ def normal_range(_samples, _fraction):
     upper = None
 
     # YOUR CODE HERE #
+    fitted_mean, fitted_std = fit_normal(_samples)
+    lower, upper = norm.interval(_fraction, loc=fitted_mean, scale=fitted_std)
 
     return lower, upper
 

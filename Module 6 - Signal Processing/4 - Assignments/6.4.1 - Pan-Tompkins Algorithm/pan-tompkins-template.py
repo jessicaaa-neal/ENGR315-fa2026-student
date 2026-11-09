@@ -1,5 +1,6 @@
 import numpy as np
 from ekg_testbench import EKGTestBench
+from scipy.signal import butter, filtfilt, find_peaks
 
 def detect_heartbeats(filepath):
     """
@@ -16,35 +17,63 @@ def detect_heartbeats(filepath):
 
     # load data in matrix from CSV file; skip first two rows
     ## your code here
+    data = np.loadtxt(path, delimiter=',', skiprows=2)
 
     # save each vector as own variable
     ## your code here
+    time = data[:, 0]
+    ecg = data[:, 1]
 
     # identify one column to process. Call that column signal
 
-    signal = -1 ## your code here
+    signal = ecg
+
+    if 'qtdb' in filepath.lower():
+        fs = 250
+    else:
+        fs = 360
 
     # pass data through LOW PASS FILTER (OPTIONAL)
     ## your code here
+    b, a = butter(2, 15, btype='low', fs=fs)
+    signal = filtfilt(b, a, signal)
+
 
     # pass data through HIGH PASS FILTER (OPTIONAL) to create BAND PASS result
     ## your code here
+    b, a = butter(2, 5, btype='high', fs=fs)
+    signal = filtfilt(b, a, signal)
 
     # pass data through differentiator
     ## your code here
+    differentiated = np.diff(signal, prepend=signal[0])
+
 
     # pass data through square function
     ## your code here
+    squared = differentiated ** 2
 
     # pass through moving average window
     ## your code here
+    window_size = int(0.15 * fs)
+    averaged = np.convolve(
+        squared,
+        np.ones(window_size) / window_size,
+        mode='same'
+    )
 
     # use find_peaks to identify peaks within averaged/filtered data
     # save the peaks result and return as part of testbench result
+    peaks, _ = find_peaks(
+    averaged,
+    height=0.15 * np.percentile(averaged, 95),
+    prominence=0.1 * np.percentile(averaged, 95),
+    distance=int(0.25 * fs)
+    )
 
     ## your code here peaks,_ = find_peaks(....)
 
-    beats = None
+    beats = peaks
 
     # do not modify this line
     return signal, beats
@@ -57,7 +86,7 @@ if __name__ == "__main__":
     import matplotlib.pyplot as plt
 
     # database name
-    database_name = 'mitdb_201'
+    database_name = 'nstdb_118e00'
 
     # set to true if you wish to generate a debug file
     file_debug = False
@@ -71,7 +100,7 @@ if __name__ == "__main__":
     ### DO NOT MODIFY BELOW THIS LINE!!! ###
 
     # path to ekg folder
-    path_to_folder = "../../../data/ekg/"
+    path_to_folder = "data/ekg/"
 
     # select a signal file to run
     signal_filepath = path_to_folder + database_name + ".csv"
